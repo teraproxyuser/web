@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Oficial - Maru Coin</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .card {
+      background-color: #1e293b;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid #334155;
+    }
+    h2 {
+      margin-top: 0;
+      color: #38bdf8;
+      text-align: center;
+      font-size: 20px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background-color: #0f172a;
+      color: #94a3b8;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background-color: #38bdf8;
+      color: #0f172a;
+    }
+    label {
+      font-size: 13px;
+      color: #94a3b8;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background-color: #0f172a;
+      color: #fff;
+      font-size: 15px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #38bdf8;
+    }
+    .result-box {
+      margin-top: 18px;
+      padding: 14px;
+      background-color: #0f172a;
+      border-radius: 10px;
+      border-left: 5px solid #38bdf8;
+    }
+    .result-title {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .result-val {
+      font-size: 22px;
+      font-weight: bold;
+      color: #4ade80;
+      margin-top: 4px;
+    }
+    .badge-bonus {
+      margin-top: 10px;
+      padding: 8px;
+      background-color: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      color: #fbbf24;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+
+    /* SECCIÓN DE REFERENCIAS / TABLA DE BONUS */
+    .ref-box {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #334155;
+    }
+    .ref-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ref-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      background-color: #0f172a;
+    }
+    .ref-item span:first-child {
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .ref-item span:last-child {
+      color: #4ade80;
+      font-weight: bold;
+    }
+    .ref-note {
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🪙 MARU COIN CALCULATOR</h2>
+
+  <!-- Opciones de Cambio (Pestañas) -->
+  <div class="tabs">
+    <button class="tab-btn active" id="btnDinero" onclick="setModo('dinero')">💵 Por Dinero</button>
+    <button class="tab-btn" id="btnMonedas" onclick="setModo('monedas')">🪙 Por Monedas</button>
+  </div>
+
+  <!-- OPCIÓN 1: POR DINERO -->
+  <div id="secDinero">
+    <label for="monedaTipo">Moneda de pago:</label>
+    <select id="monedaTipo" onchange="calcular()">
+      <option value="USDT">USDT 💵</option>
+      <option value="ARS">Pesos (ARS) 🇦🇷</option>
+    </select>
+
+    <div id="boxARS" style="display:none;">
+      <label for="cotiz">Cotización Dólar (ARS/USDT):</label>
+      <input type="number" id="cotiz" value="1200" oninput="calcular()">
+    </div>
+
+    <label for="montoDinero">Monto a abonar:</label>
+    <input type="number" id="montoDinero" placeholder="Ej: 50" oninput="calcular()">
+  </div>
+
+  <!-- OPCIÓN 2: POR CANTIDAD DE MONEDAS -->
+  <div id="secMonedas" style="display:none;">
+    <label for="montoMonedas">Monedas deseadas:</label>
+    <input type="number" id="montoMonedas" placeholder="Ej: 250000" oninput="calcular()">
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="result-box">
+    <div class="result-title" id="lblResultado">Monedas a Recibir</div>
+    <div class="result-val" id="total">0 🪙</div>
+  </div>
+
+  <div class="badge-bonus" id="bonusTag"></div>
+
+  <!-- INFORMACIÓN DE REFERENCIA (TABLA DE BONUS) -->
+  <div class="ref-box">
+    <div class="ref-title">📊 Tarifas & Escalado de Bonus</div>
+    <div class="ref-item">
+      <span>⚙️ Base (&lt; 50 USDT)</span>
+      <span>4.000 🪙 / USDT</span>
+    </div>
+    <div class="ref-item">
+      <span>🔥 Pro (≥ 50 USDT)</span>
+      <span>4.050 🪙 / USDT</span>
+    </div>
+    <div class="ref-item">
+      <span>🔥🔥 Súper (≥ 200 USDT)</span>
+      <span>4.100 🪙 / USDT</span>
+    </div>
+    <div class="ref-item">
+      <span>💣 Whale (≥ 500 USDT)</span>
+      <span>4.150 🪙 / USDT</span>
+    </div>
+    <div class="ref-note">A mayor recarga, más valor obtiene por cada dólar.</div>
+  </div>
+</div>
+
+<script>
+  let modoActual = 'dinero';
+
+  function setModo(modo) {
+    modoActual = modo;
+    document.getElementById('btnDinero').classList.toggle('active', modo === 'dinero');
+    document.getElementById('btnMonedas').classList.toggle('active', modo === 'monedas');
+    
+    document.getElementById('secDinero').style.display = modo === 'dinero' ? 'block' : 'none';
+    document.getElementById('secMonedas').style.display = modo === 'monedas' ? 'block' : 'none';
+
+    document.getElementById('lblResultado').innerText = modo === 'dinero' ? 'Monedas a Recibir' : 'Total a Pagar';
+    
+    calcular();
+  }
+
+  function calcular() {
+    const totalElem = document.getElementById('total');
+    const bonusTag = document.getElementById('bonusTag');
+
+    if (modoActual === 'dinero') {
+      const tipo = document.getElementById('monedaTipo').value;
+      const boxARS = document.getElementById('boxARS');
+      boxARS.style.display = tipo === 'ARS' ? 'block' : 'none';
+
+      const monto = parseFloat(document.getElementById('montoDinero').value) || 0;
+      const cotiz = parseFloat(document.getElementById('cotiz').value) || 1;
+
+      if (monto <= 0) {
+        totalElem.innerText = '0 🪙';
+        bonusTag.style.display = 'none';
+        return;
+      }
+
+      let usdt = tipo === 'ARS' ? (monto / cotiz) : monto;
+      
+      let tasa = 4000; // Base (<50 USDT)
+      let bonusMsg = "";
+
+      if (usdt >= 500) {
+        tasa = 2075000 / 500;
+        bonusMsg = "💣 BONUS MÁXIMO (WHALE)";
+      } else if (usdt >= 200) {
+        tasa = 820000 / 200;
+        bonusMsg = "🔥🔥 BONUS SÚPER";
+      } else if (usdt >= 50) {
+        tasa = 202500 / 50;
+        bonusMsg = "🔥 BONUS PRO";
+      }
+
+      let monedas = Math.floor(usdt * tasa);
+      totalElem.innerText = monedas.toLocaleString('es-AR') + ' 🪙';
+
+      if (bonusMsg !== "") {
+        bonusTag.innerText = bonusMsg;
+        bonusTag.style.display = 'block';
+      } else {
+        bonusTag.innerText = "💡 Ingresa 50 USDT o más para recibir bonus.";
+        bonusTag.style.display = 'block';
+      }
+
+    } else {
+      // Opción Por Monedas
+      const monedas = parseFloat(document.getElementById('montoMonedas').value) || 0;
+
+      if (monedas <= 0) {
+        totalElem.innerText = '0,00 USDT';
+        bonusTag.style.display = 'none';
+        return;
+      }
+
+      let tasaUSDT = 10 / 40000;
+      let bonusMsg = "";
+
+      if (monedas >= 2075000) {
+        tasaUSDT = 500 / 2075000;
+        bonusMsg = "💣 BONUS MÁXIMO APLICADO";
+      } else if (monedas >= 820000) {
+        tasaUSDT = 200 / 820000;
+        bonusMsg = "🔥🔥 BONUS SÚPER APLICADO";
+      } else if (monedas >= 202500) {
+        tasaUSDT = 50 / 202500;
+        bonusMsg = "🔥 BONUS PRO APLICADO";
+      }
+
+      let usdt = monedas * tasaUSDT;
+      totalElem.innerText = usdt.toFixed(2).replace('.', ',') + ' USDT';
+
+      if (bonusMsg !== "") {
+        bonusTag.innerText = bonusMsg;
+        bonusTag.style.display = 'block';
+      } else {
+        bonusTag.style.display = 'none';
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
